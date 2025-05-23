@@ -49,6 +49,11 @@ struct TypeView: View {
             Image(iconName(for: typeName))
                 .resizable()
                 .frame(width: 16, height: 16)
+                .clipShape(Circle())                     // makes it round
+                .overlay(                               // optional: a circular border
+                    Circle().stroke(Color.white, lineWidth: 1)
+                )
+                .shadow(radius: 1)                      // optional: a little shadow
             Text(typeName.capitalized)
                 .font(Font.custom("Onest", size: 12).weight(.bold))
         }
