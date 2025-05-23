@@ -45,20 +45,25 @@ class PokemonDetailViewModel: ObservableObject {
             }
 
             // If pokemonDetail is successfully fetched and contains types, fetch type data
-            if let types = fetchedDetail.types {
-                var temporaryTypeDetails: [TypeData] = []
-                for typeEntry in types {
-                    do {
-                        let typeData = try await NetworkManager.shared.fetchTypeData(typeName: typeEntry.type.name)
-                        temporaryTypeDetails.append(typeData)
-                    } catch {
-                        // Log error for individual type fetching but don't fail the whole process
-                        print("Failed to fetch type data for \(typeEntry.type.name): \(error.localizedDescription)")
-                        // Optionally, you could append a placeholder or error state for this specific type
+            if !fetchedDetail.types.isEmpty {
+                let loaded = await withTaskGroup(of: TypeData?.self) { group -> [TypeData] in
+                    for entry in fetchedDetail.types {
+                        group.addTask {
+                            // each task runs in parallel
+                            return try? await NetworkManager.shared.fetchTypeData(typeName: entry.type.name)
+                        }
                     }
+                    var results = [TypeData]()
+                    for await maybeDetail in group {
+                        if let detail = maybeDetail {
+                            results.append(detail)
+                        }
+                    }
+                    return results
                 }
+
                 await MainActor.run {
-                    self.typeDetails = temporaryTypeDetails
+                    self.typeDetails = loaded
                 }
             }
         } catch {
