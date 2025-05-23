@@ -6,20 +6,27 @@ struct PokemonRowView: View {
     var body: some View {
         HStack {
             Text(pokemon.name.capitalized)
-            Spacer() // Aligns text to the leading edge
+                .font(Theme.boldFont(size: 18))
+                .foregroundColor(Theme.pokemonDarkGray)
+            Spacer()
         }
-        .padding(.vertical, 4) // Add some vertical padding for better spacing in a list
+        .padding() // Padding inside the white box
+        .background(Theme.pokemonWhite)
+        .cornerRadius(10) // Rounded corners for the row's white box
+        .padding(.horizontal) // Padding to keep row from touching screen edges
+        .padding(.vertical, 5)   // Spacing between rows
     }
 }
 
 struct PokemonRowView_Previews: PreviewProvider {
     static var previews: some View {
-        PokemonRowView(pokemon: PokemonListItem(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/1/"))
-            .previewLayout(.fixed(width: 300, height: 70))
-            .padding() // Add padding to the preview itself for better visibility
-        
-        PokemonRowView(pokemon: PokemonListItem(name: "charmander", url: "https://pokeapi.co/api/v2/pokemon/4/"))
-            .previewLayout(.sizeThatFits) // Another way to preview
-            .padding()
+        Group {
+            PokemonRowView(pokemon: PokemonListItem(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/1/"))
+            PokemonRowView(pokemon: PokemonListItem(name: "charmander", url: "https://pokeapi.co/api/v2/pokemon/4/"))
+            PokemonRowView(pokemon: PokemonListItem(name: "PikachuWithVeryLongNameForTesting", url: "https://pokeapi.co/api/v2/pokemon/25/"))
+        }
+        .padding()
+        .previewLayout(.sizeThatFits)
+        .background(Theme.pokemonLightGray) // Preview background to see row separation
     }
 }

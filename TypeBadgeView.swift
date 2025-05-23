@@ -39,7 +39,7 @@ struct TypeBadgeView: View {
 
     var body: some View {
         Text(typeName.capitalized)
-            .font(.caption.bold())
+            .font(Theme.boldFont(size: 12)) // Using theme's custom bold font
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(backgroundColorForType(typeName))

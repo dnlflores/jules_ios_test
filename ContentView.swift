@@ -19,37 +19,60 @@ struct ContentView: View {
     // 4. Body View
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) { // Set spacing to 0 if we want list to seamlessly connect to search bar background
                 // Search Bar
                 TextField("Search Pokemon", text: $searchText)
+                    .font(Theme.regularFont(size: 16))
+                    .foregroundColor(Theme.pokemonBlack)
                     .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    .padding(.horizontal)
+                    .background(Theme.pokemonWhite)
+                    .cornerRadius(10)
+                    .padding() // Padding around the search bar itself
+                    .background(Theme.pokemonRed.ignoresSafeArea(edges: .top)) // Background for the search bar area
 
                 // Loading View / Error View
                 if isLoading {
-                    ProgressView("Fetching Pokemon...")
+                    ProgressView { Text("Fetching Pokemon...").textStyle(.body) }
                         .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity) // Center it
+                        .background(Theme.pokemonLightGray.ignoresSafeArea())
                 } else if let errorMessage = errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(.red)
+                        .textStyle(.body)
+                        .foregroundColor(Theme.pokemonRed)
                         .padding()
-                }
-
-                // Pokemon List
-                List(filteredPokemon) { pokemon in
-                    NavigationLink(destination: PokemonDetailView(pokemonName: pokemon.name)) {
-                        PokemonRowView(pokemon: pokemon)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity) // Center it
+                        .background(Theme.pokemonLightGray.ignoresSafeArea())
+                } else {
+                    // Pokemon List
+                    List(filteredPokemon) { pokemon in
+                        NavigationLink(destination: PokemonDetailView(pokemonName: pokemon.name)) {
+                            PokemonRowView(pokemon: pokemon)
+                        }
+                        .listRowBackground(Color.clear) // Allow PokemonRowView to show its own background
+                        .listRowSeparator(.hidden) // Hide default separators
+                         // .listRowInsets(EdgeInsets()) // Consider if padding from PokemonRowView is enough
+                    }
+                    .listStyle(PlainListStyle()) // Use PlainListStyle for more control over background
+                    .background(Theme.pokemonLightGray.ignoresSafeArea()) // Main background for the list area
+                    // 6. .task Modifier
+                    .task {
+                        await fetchInitialPokemon()
                     }
                 }
-                // 6. .task Modifier
-                .task {
-                    await fetchInitialPokemon()
-                }
-                .navigationTitle("Pokedex")
             }
+            .navigationTitle("Pokedex") // Font for this will be set globally later
         }
+        // Apply global font for navigation title - this is a more involved step (UINavigationBarAppearance)
+        // For now, .navigationTitle("Pokedex") uses default system font.
+        // If we want to force it here (might not be ideal for all navigation styles):
+        // .navigationBarTitleDisplayMode(.inline) // Or .large
+        // .toolbar {
+        //     ToolbarItem(placement: .principal) { // Or .navigationBarLeading / .navigationBarTrailing for other styles
+        //         Text("Pokedex").font(Theme.boldFont(size: 22)).foregroundColor(Theme.pokemonWhite) // Example
+        //     }
+        // }
+        // .navigationViewStyle(StackNavigationViewStyle()) // Useful on iPad
     }
 
     // 5. Fetch Pokemon Function
