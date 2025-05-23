@@ -16,24 +16,57 @@ struct ContentView: View {
         }
     }
 
+    // Custom init for NavigationBar styling
+    init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(Color("PokemonRed")) // Set background color
+        
+        // Set title font
+        let titleFont = UIFont(name: "Onest", size: 22) ?? UIFont.systemFont(ofSize: 22, weight: .bold)
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor(Color("PokemonWhite")),
+            .font: titleFont
+        ]
+        appearance.largeTitleTextAttributes = [
+            .foregroundColor: UIColor(Color("PokemonWhite")),
+            .font: titleFont // Assuming large titles should also use this font size for consistency in this app
+        ]
+
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance // For smaller nav bars
+    }
+
     // 4. Body View
     var body: some View {
         NavigationView {
             VStack {
                 // Search Bar
                 TextField("Search Pokemon", text: $searchText)
+                    .font(Font.custom("Onest", size: 17)) // Apply custom font to TextField
+                    .foregroundColor(Color("PokemonBlack")) // Text color for TextField
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color("PokemonWhite")) // Background for TextField
                     .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color("PokemonBlack").opacity(0.2), lineWidth: 1) // Border for TextField
+                    )
                     .padding(.horizontal)
 
                 // Loading View / Error View
                 if isLoading {
-                    ProgressView("Fetching Pokemon...")
-                        .padding()
+                    ProgressView { // Custom label for ProgressView
+                        Text("Fetching Pokemon...")
+                            .font(Font.custom("Onest", size: 17)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack"))
+                    }
+                    .padding()
                 } else if let errorMessage = errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(.red)
+                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .foregroundColor(Color("PokemonRed")) // Error text color
                         .padding()
                 }
 
@@ -42,13 +75,15 @@ struct ContentView: View {
                     NavigationLink(destination: PokemonDetailView(pokemonName: pokemon.name)) {
                         PokemonRowView(pokemon: pokemon)
                     }
+                    .listRowBackground(Color("PokemonWhite")) // Ensure list rows also use the white background
                 }
                 // 6. .task Modifier
                 .task {
                     await fetchInitialPokemon()
                 }
-                .navigationTitle("Pokedex")
+                .navigationTitle("Pokedex") // Title set here, color handled by UINavigationBarAppearance
             }
+            .background(Color("PokemonWhite")) // Background for the VStack
         }
     }
 

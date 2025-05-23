@@ -19,12 +19,17 @@ struct PokemonDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if viewModel.isLoading && viewModel.pokemonDetail == nil { // Show loading only if no detail yet
-                    ProgressView("Loading details...")
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding()
+                    ProgressView { // Custom label for ProgressView
+                        Text("Loading details...")
+                            .font(Font.custom("Onest", size: 17)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack"))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
                 } else if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(.red)
+                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .foregroundColor(Color("PokemonRed")) // Error text color
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
@@ -32,12 +37,15 @@ struct PokemonDetailView: View {
                 if let detail = viewModel.pokemonDetail {
                     // Pokemon Name (already in navigation title, but can be good here too)
                      Text(detail.name.capitalized)
-                        .font(.largeTitle)
+                        .font(Font.custom("Onest", size: 34)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
                     if let sprites = viewModel.pokemonDetail?.sprites {
-                        Text("Sprites").font(.title2) // Section title
+                        Text("Sprites")
+                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack {
                             Spacer() // To center the sprites
                             if let frontDefaultURLString = sprites.front_default, let url = URL(string: frontDefaultURLString) {
@@ -65,15 +73,20 @@ struct PokemonDetailView: View {
 
                     // Pokedex Entry Section
                     Text("Pokedex Entry")
-                        .font(.title2)
+                        .font(Font.custom("Onest", size: 22)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Section title color
                         .padding(.top)
                     
                     Text(viewModel.englishPokedexEntry ?? (viewModel.isLoading ? "Loading entry..." : "No Pokedex entry available."))
+                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
 
                     // Types Section
                     if let types = viewModel.pokemonDetail?.types, !types.isEmpty {
-                        Text("Types").font(.title2)
+                        Text("Types")
+                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack(spacing: 10) {
                             ForEach(types, id: \.slot) { typeEntry in
                                 TypeBadgeView(typeName: typeEntry.type.name)
@@ -84,7 +97,9 @@ struct PokemonDetailView: View {
 
                     // Effective Against Section
                     if !viewModel.effectiveAgainstTypes.isEmpty {
-                        Text("Effective Against").font(.title2)
+                        Text("Effective Against")
+                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.effectiveAgainstTypes, spacing: 8, alignment: .leading) { typeName in
                             TypeBadgeView(typeName: typeName)
                         }
@@ -93,7 +108,9 @@ struct PokemonDetailView: View {
 
                     // Weak Against Section
                     if !viewModel.weakAgainstTypes.isEmpty {
-                        Text("Weak Against").font(.title2)
+                        Text("Weak Against")
+                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.weakAgainstTypes, spacing: 8, alignment: .leading) { typeName in
                             TypeBadgeView(typeName: typeName)
                         }
@@ -102,8 +119,11 @@ struct PokemonDetailView: View {
 
                     // Moves Section (Placeholder)
                     Text("Moves")
-                        .font(.title2)
+                        .font(Font.custom("Onest", size: 22)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Section title color
                     Text("Moves will go here") // This placeholder remains
+                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
 
                     // Effectiveness Section (Placeholder) - This was part of the original code, if it's different from "Effective/Weak Against", it should remain or be clarified.
@@ -116,12 +136,16 @@ struct PokemonDetailView: View {
                 } else if !viewModel.isLoading && viewModel.errorMessage == nil {
                      // Case where not loading, no error, but also no detail (e.g. initial state before task runs, though less likely with current VM setup)
                     Text("No details available for \(pokemonName.capitalized).")
+                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .padding()
+            .background(Color("PokemonWhite")) // Set background for the VStack content
         }
+        .background(Color("PokemonWhite")) // Set background for the ScrollView
         .navigationTitle(viewModel.pokemonDetail?.name.capitalized ?? pokemonName.capitalized)
         .navigationBarTitleDisplayMode(.inline)
         // .task { // ViewModel now fetches in its init

@@ -6,9 +6,12 @@ struct PokemonRowView: View {
     var body: some View {
         HStack {
             Text(pokemon.name.capitalized)
+                .font(Font.custom("Onest", size: 17)) // Apply custom font
+                .foregroundColor(Color("PokemonBlack")) // Set text color
             Spacer() // Aligns text to the leading edge
         }
         .padding(.vertical, 4) // Add some vertical padding for better spacing in a list
+        .background(Color("PokemonWhite")) // Set background color
     }
 }
 
