@@ -4,7 +4,11 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+<<<<<<< Updated upstream
                <string>Fonts/PlaypenSans-VariableFont_wght.ttf</string>
+=======
+		<string>PlaypenSans-VariableFont_wght.ttf</string>
+>>>>>>> Stashed changes
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

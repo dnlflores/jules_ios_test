@@ -23,7 +23,11 @@ struct ContentView: View {
         appearance.backgroundColor = UIColor(Color("PokemonRed")) // Set background color
         
         // Set title font
+<<<<<<< Updated upstream
         let titleFont = UIFont.playpenSans(ofSize: 22, weight: .bold)
+=======
+        let titleFont = UIFont(name: "PlaypenSans", size: 22) ?? UIFont.systemFont(ofSize: 22, weight: .bold)
+>>>>>>> Stashed changes
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor(Color("PokemonWhite")),
             .font: titleFont

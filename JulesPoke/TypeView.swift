@@ -12,30 +12,36 @@ struct TypeView: View {
     /// Background color used for the badge, matching TypeBadgeView's logic.
     private func backgroundColorForType(_ typeName: String) -> Color {
         switch typeName.lowercased() {
-            case "fire": return Color("PokemonRed")
-            case "water": return Color("PokemonBlue")
-            case "electric": return Color("PokemonYellow")
-            case "normal": return Color("PokemonBlack")
-            case "grass", "bug": return Color("PokemonYellow")
-            case "ice", "flying", "fairy", "steel": return Color("PokemonBlue")
-            case "fighting", "poison", "ground", "psychic", "rock", "ghost", "dragon", "dark":
-                return Color("PokemonBlack")
-            default: return Color("PokemonBlack").opacity(0.7)
+            case "normal": return Color.gray
+            case "fire": return Color.red
+            case "water": return Color.blue
+            case "electric": return Color.yellow
+            case "grass": return Color.green
+            case "ice": return Color.cyan
+            case "fighting": return Color.orange
+            case "poison": return Color.purple
+            case "ground": return Color.brown
+            case "flying": return Color(red: 0.67, green: 0.56, blue: 0.93) // Light purple/blue
+            case "psychic": return Color.pink
+            case "bug": return Color(red: 0.56, green: 0.78, blue: 0.22) // Lime green
+            case "rock": return Color(red: 0.71, green: 0.63, blue: 0.35) // Sandy brown
+            case "ghost": return Color(red: 0.45, green: 0.35, blue: 0.56) // Darker purple
+            case "dragon": return Color(red: 0.44, green: 0.22, blue: 0.88) // Deep indigo
+            case "dark": return Color(red: 0.44, green: 0.33, blue: 0.26) // Dark brown/gray
+            case "steel": return Color(red: 0.72, green: 0.72, blue: 0.82) // Light steel gray
+            case "fairy": return Color(red: 0.93, green: 0.60, blue: 0.68) // Light pink/magenta
+            default: return Color.gray.opacity(0.5) // Default for unknown types
         }
     }
 
     /// Determines an appropriate foreground color based on the background.
-    private func foregroundColorForType(_ typeName: String) -> Color {
+    private func foregroundColorForType(_ typeName: String) ->  Color {
         let bgColor = backgroundColorForType(typeName)
-        if bgColor == Color("PokemonRed") ||
-            bgColor == Color("PokemonBlue") ||
-            bgColor == Color("PokemonBlack") ||
-            bgColor == Color("PokemonBlack").opacity(0.7) {
-            return Color("PokemonWhite")
-        } else if bgColor == Color("PokemonYellow") || bgColor == Color("PokemonWhite") {
-            return Color("PokemonBlack")
+        // Simple heuristic: if background is yellow or cyan (common light colors), use black text
+        if bgColor == Color.yellow || bgColor == Color.cyan || bgColor == Color(red: 0.72, green: 0.72, blue: 0.82) /* steel */ || bgColor == Color(red: 0.93, green: 0.60, blue: 0.68) /* fairy */ {
+            return Color.black
         }
-        return Color("PokemonBlack")
+        return Color.white
     }
 
     var body: some View {
