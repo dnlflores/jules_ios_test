@@ -21,14 +21,14 @@ struct PokemonDetailView: View {
                 if viewModel.isLoading && viewModel.pokemonDetail == nil { // Show loading only if no detail yet
                     ProgressView { // Custom label for ProgressView
                         Text("Loading details...")
-                            .font(Font.custom("Onest", size: 17)) // Apply custom font
+                            .font(.playpenSans(size: 17)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack"))
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
                 } else if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
-                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .font(.playpenSans(size: 17)) // Apply custom font
                         .foregroundColor(Color("PokemonRed")) // Error text color
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -37,14 +37,14 @@ struct PokemonDetailView: View {
                 if let detail = viewModel.pokemonDetail {
                     // Pokemon Name (already in navigation title, but can be good here too)
                      Text(detail.name.capitalized)
-                        .font(Font.custom("Onest", size: 34)) // Apply custom font
+                        .font(.playpenSans(size: 34)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Text color
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
                     if let sprites = viewModel.pokemonDetail?.sprites {
                         Text("Sprites")
-                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .font(.playpenSans(size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack {
                             Spacer() // To center the sprites
@@ -73,19 +73,19 @@ struct PokemonDetailView: View {
 
                     // Pokedex Entry Section
                     Text("Pokedex Entry")
-                        .font(Font.custom("Onest", size: 22)) // Apply custom font
+                        .font(.playpenSans(size: 22)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Section title color
                         .padding(.top)
                     
                     Text(viewModel.englishPokedexEntry ?? (viewModel.isLoading ? "Loading entry..." : "No Pokedex entry available."))
-                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .font(.playpenSans(size: 17)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
 
                     // Types Section
                     if let types = viewModel.pokemonDetail?.types, !types.isEmpty {
                         Text("Types")
-                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .font(.playpenSans(size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack(spacing: 10) {
                             ForEach(types, id: \.slot) { typeEntry in
@@ -98,7 +98,7 @@ struct PokemonDetailView: View {
                     // Effective Against Section
                     if !viewModel.effectiveAgainstTypes.isEmpty {
                         Text("Effective Against")
-                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .font(.playpenSans(size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.effectiveAgainstTypes, spacing: 8, alignment: .leading) { typeName in
                             TypeView(typeName: typeName)
@@ -109,7 +109,7 @@ struct PokemonDetailView: View {
                     // Weak Against Section
                     if !viewModel.weakAgainstTypes.isEmpty {
                         Text("Weak Against")
-                            .font(Font.custom("Onest", size: 22)) // Apply custom font
+                            .font(.playpenSans(size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.weakAgainstTypes, spacing: 8, alignment: .leading) { typeName in
                             TypeView(typeName: typeName)
@@ -119,10 +119,10 @@ struct PokemonDetailView: View {
 
                     // Moves Section (Placeholder)
                     Text("Moves")
-                        .font(Font.custom("Onest", size: 22)) // Apply custom font
+                        .font(.playpenSans(size: 22)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Section title color
                     Text("Moves will go here") // This placeholder remains
-                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .font(.playpenSans(size: 17)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
 
@@ -136,7 +136,7 @@ struct PokemonDetailView: View {
                 } else if !viewModel.isLoading && viewModel.errorMessage == nil {
                      // Case where not loading, no error, but also no detail (e.g. initial state before task runs, though less likely with current VM setup)
                     Text("No details available for \(pokemonName.capitalized).")
-                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .font(.playpenSans(size: 17)) // Apply custom font
                         .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
