@@ -89,7 +89,7 @@ struct PokemonDetailView: View {
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack(spacing: 10) {
                             ForEach(types, id: \.slot) { typeEntry in
-                                TypeBadgeView(typeName: typeEntry.type.name)
+                                TypeView(typeName: typeEntry.type.name)
                             }
                         }
                         .padding(.vertical)
@@ -101,7 +101,7 @@ struct PokemonDetailView: View {
                             .font(Font.custom("Onest", size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.effectiveAgainstTypes, spacing: 8, alignment: .leading) { typeName in
-                            TypeBadgeView(typeName: typeName)
+                            TypeView(typeName: typeName)
                         }
                         .padding(.vertical)
                     }
@@ -112,7 +112,7 @@ struct PokemonDetailView: View {
                             .font(Font.custom("Onest", size: 22)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         FlexibleFlowLayout(data: viewModel.weakAgainstTypes, spacing: 8, alignment: .leading) { typeName in
-                            TypeBadgeView(typeName: typeName)
+                            TypeView(typeName: typeName)
                         }
                         .padding(.vertical)
                     }
