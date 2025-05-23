@@ -23,7 +23,7 @@ struct ContentView: View {
         appearance.backgroundColor = UIColor(Color("PokemonRed")) // Set background color
         
         // Set title font
-        let titleFont = UIFont(name: "Onest", size: 22) ?? UIFont.systemFont(ofSize: 22, weight: .bold)
+        let titleFont = UIFont.playpenSans(ofSize: 22, weight: .bold)
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor(Color("PokemonWhite")),
             .font: titleFont
@@ -44,7 +44,7 @@ struct ContentView: View {
             VStack {
                 // Search Bar
                 TextField("Search Pokemon", text: $searchText)
-                    .font(Font.custom("Onest", size: 17)) // Apply custom font to TextField
+                    .font(.playpenSans(size: 17)) // Apply custom font to TextField
                     .foregroundColor(Color("PokemonBlack")) // Text color for TextField
                     .padding()
                     .background(Color("PokemonWhite")) // Background for TextField
@@ -59,13 +59,13 @@ struct ContentView: View {
                 if isLoading {
                     ProgressView { // Custom label for ProgressView
                         Text("Fetching Pokemon...")
-                            .font(Font.custom("Onest", size: 17)) // Apply custom font
+                            .font(.playpenSans(size: 17)) // Apply custom font
                             .foregroundColor(Color("PokemonBlack"))
                     }
                     .padding()
                 } else if let errorMessage = errorMessage {
                     Text(errorMessage)
-                        .font(Font.custom("Onest", size: 17)) // Apply custom font
+                        .font(.playpenSans(size: 17)) // Apply custom font
                         .foregroundColor(Color("PokemonRed")) // Error text color
                         .padding()
                 }
