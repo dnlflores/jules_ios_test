@@ -30,6 +30,7 @@ Package.resolved
 .swiftpm
 
 .build/
+.DS_Store
 
 # CocoaPods
 #
