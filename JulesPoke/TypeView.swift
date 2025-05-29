@@ -55,7 +55,6 @@ struct TypeView: View {
                 )
                 .shadow(radius: 1)                      // optional: a little shadow
             Text(typeName.capitalized)
-                .font(Font.custom("Playpen Sans", size: 12).weight(.bold))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
