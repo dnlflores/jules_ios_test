@@ -79,6 +79,7 @@ struct ContentView: View {
             }
             .background(Color("PokemonWhite")) // Background for the VStack
         }
+        .ignoresSafeArea()
     }
 
     // 5. Fetch Pokemon Function
