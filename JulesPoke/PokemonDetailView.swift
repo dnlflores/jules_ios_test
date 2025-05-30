@@ -42,10 +42,19 @@ struct PokemonDetailView: View {
                             HStack(spacing: 10) {
                                 ForEach(sprites.all.sorted(), id: \.self) { urlString in
                                     if let url = URL(string: urlString) {
-                                        AsyncImage(url: url) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            ProgressView()
+                                        AsyncImage(url: url) { phase in
+                                            switch phase {
+                                            case .empty:
+                                                ProgressView()
+                                            case .success(let image):
+                                                image.resizable()
+                                            case .failure:
+                                                Image(systemName: "xmark.circle")
+                                                    .resizable()
+                                                    .foregroundColor(.secondary)
+                                            @unknown default:
+                                                EmptyView()
+                                            }
                                         }
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 100, height: 100)
