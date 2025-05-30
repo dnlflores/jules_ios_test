@@ -100,11 +100,21 @@ struct PokemonDetailView: View {
                         .padding(.vertical)
                     }
 
-                    // Moves Section (Placeholder)
-                    Text("Moves")
-                        .font(.title2)
-                    Text("Moves will go here") // This placeholder remains
+                    // Moves Section
+                    if !viewModel.moveDetails.isEmpty {
+                        Text("Moves")
+                            .font(.title2)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(viewModel.moveDetails) { move in
+                                HStack(spacing: 8) {
+                                    TypeBadgeView(typeName: move.type.name)
+                                    Text(move.name.capitalized)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                        }
                         .padding(.bottom)
+                    }
 
                     // Effectiveness Section (Placeholder) - This was part of the original code, if it's different from "Effective/Weak Against", it should remain or be clarified.
                     // For now, assuming "Effective Against" and "Weak Against" cover this. If not, this placeholder might need to be re-evaluated.
