@@ -5,6 +5,8 @@ class PokemonDetailViewModel: ObservableObject {
     @Published var pokemonDetail: PokemonDetail?
     @Published var pokemonSpecies: PokemonSpecies?
     @Published var typeDetails: [TypeData] = []
+    @Published var moveDetails: [MoveDetailData] = []
+    @Published var evolutionChainNames: [String] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
@@ -36,12 +38,20 @@ class PokemonDetailViewModel: ObservableObject {
             async let detailResult = NetworkManager.shared.fetchPokemonDetail(name: pokemonName)
             async let speciesResult = NetworkManager.shared.fetchPokemonSpecies(name: pokemonName)
 
-            let fetchedDetail = try await detailResult
-            let fetchedSpecies = try await speciesResult
+           let fetchedDetail = try await detailResult
+           let fetchedSpecies = try await speciesResult
             
             await MainActor.run {
-                self.pokemonDetail = fetchedDetail
-                self.pokemonSpecies = fetchedSpecies
+               self.pokemonDetail = fetchedDetail
+               self.pokemonSpecies = fetchedSpecies
+           }
+
+            // Evolution chain
+            let chain = try await NetworkManager.shared.fetchEvolutionChain(from: fetchedSpecies.evolution_chain.url)
+            var names: [String] = []
+            Self.collectEvolutionNames(from: chain.chain, into: &names)
+            await MainActor.run {
+                self.evolutionChainNames = names
             }
 
             // If pokemonDetail is successfully fetched and contains types, fetch type data
@@ -62,10 +72,32 @@ class PokemonDetailViewModel: ObservableObject {
                     return results
                 }
 
-                await MainActor.run {
-                    self.typeDetails = loaded
-                }
+            await MainActor.run {
+                self.typeDetails = loaded
             }
+        }
+
+        if !fetchedDetail.moves.isEmpty {
+            let firstMoves = fetchedDetail.moves.prefix(10)
+            let loadedMoves = await withTaskGroup(of: MoveDetailData?.self) { group -> [MoveDetailData] in
+                for moveEntry in firstMoves {
+                    group.addTask {
+                        return try? await NetworkManager.shared.fetchMoveDetail(moveName: moveEntry.move.name)
+                    }
+                }
+                var results = [MoveDetailData]()
+                for await maybeMove in group {
+                    if let move = maybeMove {
+                        results.append(move)
+                    }
+                }
+                return results
+            }
+
+            await MainActor.run {
+                self.moveDetails = loadedMoves.sorted { $0.name < $1.name }
+            }
+        }
         } catch {
             await MainActor.run {
                 if let networkError = error as? NetworkError {
@@ -76,6 +108,8 @@ class PokemonDetailViewModel: ObservableObject {
                         self.errorMessage = "Request failed: \(underlyingError.localizedDescription)."
                     case .decodingError(let underlyingError):
                         self.errorMessage = "Failed to decode Pokemon details: \(underlyingError.localizedDescription)."
+                    case .noConnection:
+                        self.errorMessage = "No internet connection. Unable to fetch Pokemon details."
                     case .unknown:
                         self.errorMessage = "An unknown error occurred while fetching Pokemon details."
                     }
@@ -123,5 +157,13 @@ class PokemonDetailViewModel: ObservableObject {
         // Filter out types that the Pokemon might also be resistant to due to its other type (complex interactions)
         // For now, just list all types it's weak against.
         return Array(combinedDamageFrom).sorted()
+    }
+
+    // MARK: - Evolution Chain Helpers
+    private static func collectEvolutionNames(from link: EvolutionChainLink, into names: inout [String]) {
+        names.append(link.species.name)
+        for next in link.evolves_to {
+            collectEvolutionNames(from: next, into: &names)
+        }
     }
 }

@@ -39,30 +39,46 @@ struct PokemonDetailView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
-                    if let sprites = viewModel.pokemonDetail?.sprites {
-                        Text("Sprites")
-                            .foregroundColor(Color("PokemonBlack")) // Section title color
-                        HStack {
-                            Spacer() // To center the sprites
-                            if let frontDefaultURLString = sprites.front_default, let url = URL(string: frontDefaultURLString) {
-                                AsyncImage(url: url) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    ProgressView()
+                    if let sprites = viewModel.pokemonDetail?.sprites, !sprites.all.isEmpty {
+                        Text("Sprites").font(.title2)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(sprites.all.sorted(), id: \.self) { urlString in
+                                    if let url = URL(string: urlString) {
+                                        AsyncImage(url: url) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            ProgressView()
+                                        }
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                    }
                                 }
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
                             }
-                            if let frontShinyURLString = sprites.front_shiny, let url = URL(string: frontShinyURLString) {
-                                AsyncImage(url: url) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    ProgressView()
+                            .padding(.horizontal)
+                        }
+                        .frame(height: 120)
+                        .padding(.vertical)
+                    }
+
+                    // Evolution Chain Section
+                    if viewModel.evolutionChainNames.count > 1 {
+                        Text("Evolution Chain")
+                            .font(.title2)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(alignment: .center, spacing: 4) {
+                                ForEach(viewModel.evolutionChainNames.indices, id: \.self) { index in
+                                    Text(viewModel.evolutionChainNames[index].capitalized)
+                                        .padding(4)
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(8)
+                                    if index < viewModel.evolutionChainNames.count - 1 {
+                                        Image(systemName: "arrow.right")
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
                             }
-                            Spacer() // To center the sprites
+                            .padding(.horizontal)
                         }
                         .padding(.vertical)
                     }
@@ -110,10 +126,10 @@ struct PokemonDetailView: View {
 
                     // Moves Section (Placeholder)
                     Text("Moves")
-                        .foregroundColor(Color("PokemonBlack")) // Section title color
+                        .font(.title2)
                     Text("Moves will go here") // This placeholder remains
-                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
+                    }
 
                     // Effectiveness Section (Placeholder) - This was part of the original code, if it's different from "Effective/Weak Against", it should remain or be clarified.
                     // For now, assuming "Effective Against" and "Weak Against" cover this. If not, this placeholder might need to be re-evaluated.
