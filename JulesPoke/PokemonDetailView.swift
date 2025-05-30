@@ -19,15 +19,12 @@ struct PokemonDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if viewModel.isLoading && viewModel.pokemonDetail == nil { // Show loading only if no detail yet
-                    ProgressView { // Custom label for ProgressView
-                        Text("Loading details...")
-                            .foregroundColor(Color("PokemonBlack"))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
+                    ProgressView("Loading details...")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding()
                 } else if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
-                        .foregroundColor(Color("PokemonRed")) // Error text color
+                        .foregroundColor(.red)
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
@@ -35,7 +32,7 @@ struct PokemonDetailView: View {
                 if let detail = viewModel.pokemonDetail {
                     // Pokemon Name (already in navigation title, but can be good here too)
                      Text(detail.name.capitalized)
-                        .foregroundColor(Color("PokemonBlack")) // Text color
+                        .font(.largeTitle)
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
@@ -85,20 +82,18 @@ struct PokemonDetailView: View {
 
                     // Pokedex Entry Section
                     Text("Pokedex Entry")
-                        .foregroundColor(Color("PokemonBlack")) // Section title color
+                        .font(.title2)
                         .padding(.top)
                     
                     Text(viewModel.englishPokedexEntry ?? (viewModel.isLoading ? "Loading entry..." : "No Pokedex entry available."))
-                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding(.bottom)
 
                     // Types Section
                     if let types = viewModel.pokemonDetail?.types, !types.isEmpty {
-                        Text("Types")
-                            .foregroundColor(Color("PokemonBlack")) // Section title color
+                        Text("Types").font(.title2)
                         HStack(spacing: 10) {
                             ForEach(types, id: \.slot) { typeEntry in
-                                TypeView(typeName: typeEntry.type.name)
+                                TypeBadgeView(typeName: typeEntry.type.name)
                             }
                         }
                         .padding(.vertical)
@@ -106,28 +101,35 @@ struct PokemonDetailView: View {
 
                     // Effective Against Section
                     if !viewModel.effectiveAgainstTypes.isEmpty {
-                        Text("Effective Against")
-                            .foregroundColor(Color("PokemonBlack")) // Section title color
+                        Text("Effective Against").font(.title2)
                         FlexibleFlowLayout(data: viewModel.effectiveAgainstTypes, spacing: 8, alignment: .leading) { typeName in
-                            TypeView(typeName: typeName)
+                            TypeBadgeView(typeName: typeName)
                         }
                         .padding(.vertical)
                     }
 
                     // Weak Against Section
                     if !viewModel.weakAgainstTypes.isEmpty {
-                        Text("Weak Against")
-                            .foregroundColor(Color("PokemonBlack")) // Section title color
+                        Text("Weak Against").font(.title2)
                         FlexibleFlowLayout(data: viewModel.weakAgainstTypes, spacing: 8, alignment: .leading) { typeName in
-                            TypeView(typeName: typeName)
+                            TypeBadgeView(typeName: typeName)
                         }
                         .padding(.vertical)
                     }
 
-                    // Moves Section (Placeholder)
-                    Text("Moves")
-                        .font(.title2)
-                    Text("Moves will go here") // This placeholder remains
+                    // Moves Section
+                    if !viewModel.moveDetails.isEmpty {
+                        Text("Moves")
+                            .font(.title2)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(viewModel.moveDetails) { move in
+                                HStack(spacing: 8) {
+                                    TypeBadgeView(typeName: move.type.name)
+                                    Text(move.name.capitalized)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                        }
                         .padding(.bottom)
                     }
 
@@ -141,15 +143,12 @@ struct PokemonDetailView: View {
                 } else if !viewModel.isLoading && viewModel.errorMessage == nil {
                      // Case where not loading, no error, but also no detail (e.g. initial state before task runs, though less likely with current VM setup)
                     Text("No details available for \(pokemonName.capitalized).")
-                        .foregroundColor(Color("PokemonBlack")) // Text color
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .padding()
-            .background(Color("PokemonWhite")) // Set background for the VStack content
         }
-        .background(Color("PokemonWhite")) // Set background for the ScrollView
         .navigationTitle(viewModel.pokemonDetail?.name.capitalized ?? pokemonName.capitalized)
         .navigationBarTitleDisplayMode(.inline)
         // .task { // ViewModel now fetches in its init

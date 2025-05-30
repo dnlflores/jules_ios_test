@@ -40,7 +40,7 @@ struct FlexibleFlowLayout<Data: Collection, Content: View>: View where Data.Elem
 
         for element in data {
             // This is a simplified width estimation.
-            // For views like TypeView, a more accurate measurement would involve PreferenceKeys
+            // For TypeBadgeView, a more accurate measurement would involve PreferenceKeys
             // or a fixed size if all badges are similar.
             // Let's estimate based on character count of the typeName (assuming element is String).
             let elementText = String(describing: element) // Works if element is String, adapt if not
@@ -95,7 +95,7 @@ struct FlexibleFlowLayout_Previews: PreviewProvider {
                 Text("Layout with Type Badges:")
                     .font(.headline)
                 FlexibleFlowLayout(data: sampleTypes, spacing: 8, alignment: .leading) { typeName in
-                    TypeView(typeName: typeName)
+                    TypeBadgeView(typeName: typeName)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
