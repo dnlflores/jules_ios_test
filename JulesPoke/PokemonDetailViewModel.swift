@@ -6,6 +6,7 @@ class PokemonDetailViewModel: ObservableObject {
     @Published var pokemonSpecies: PokemonSpecies?
     @Published var typeDetails: [TypeData] = []
     @Published var moveDetails: [MoveDetailData] = []
+    @Published var evolutionChainNames: [String] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
@@ -37,12 +38,20 @@ class PokemonDetailViewModel: ObservableObject {
             async let detailResult = NetworkManager.shared.fetchPokemonDetail(name: pokemonName)
             async let speciesResult = NetworkManager.shared.fetchPokemonSpecies(name: pokemonName)
 
-            let fetchedDetail = try await detailResult
-            let fetchedSpecies = try await speciesResult
+           let fetchedDetail = try await detailResult
+           let fetchedSpecies = try await speciesResult
             
             await MainActor.run {
-                self.pokemonDetail = fetchedDetail
-                self.pokemonSpecies = fetchedSpecies
+               self.pokemonDetail = fetchedDetail
+               self.pokemonSpecies = fetchedSpecies
+           }
+
+            // Evolution chain
+            let chain = try await NetworkManager.shared.fetchEvolutionChain(from: fetchedSpecies.evolution_chain.url)
+            var names: [String] = []
+            Self.collectEvolutionNames(from: chain.chain, into: &names)
+            await MainActor.run {
+                self.evolutionChainNames = names
             }
 
             // If pokemonDetail is successfully fetched and contains types, fetch type data
@@ -148,5 +157,13 @@ class PokemonDetailViewModel: ObservableObject {
         // Filter out types that the Pokemon might also be resistant to due to its other type (complex interactions)
         // For now, just list all types it's weak against.
         return Array(combinedDamageFrom).sorted()
+    }
+
+    // MARK: - Evolution Chain Helpers
+    private static func collectEvolutionNames(from link: EvolutionChainLink, into names: inout [String]) {
+        names.append(link.species.name)
+        for next in link.evolves_to {
+            collectEvolutionNames(from: next, into: &names)
+        }
     }
 }

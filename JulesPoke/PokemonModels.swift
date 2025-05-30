@@ -113,7 +113,13 @@ struct TypeDetail: Codable, Identifiable {
 // 8. PokemonSpecies
 struct PokemonSpecies: Codable {
     let flavor_text_entries: [FlavorTextEntry]
+    let evolution_chain: EvolutionChainReference
     let id: Int // Useful for fetching, not necessarily for Identifiable here
+}
+
+/// Reference to the evolution chain endpoint returned by the species API.
+struct EvolutionChainReference: Codable {
+    let url: String
 }
 
 // 9. FlavorTextEntry
@@ -158,4 +164,22 @@ struct PokemonListResponse: Codable {
     let next: String?
     let previous: String?
     let results: [PokemonListItem]
+}
+
+// MARK: - Evolution Chain
+/// Top level object returned by the evolution-chain endpoint.
+struct EvolutionChain: Codable {
+    let chain: EvolutionChainLink
+}
+
+/// Represents a single link in the evolution chain tree.
+struct EvolutionChainLink: Codable {
+    let species: SpeciesReference
+    let evolves_to: [EvolutionChainLink]
+}
+
+/// Lightweight species reference used throughout the API.
+struct SpeciesReference: Codable {
+    let name: String
+    let url: String
 }

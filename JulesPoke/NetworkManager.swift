@@ -104,4 +104,8 @@ class NetworkManager {
         let endpoint = "move/\(moveName.lowercased())"
         return try await fetchData(from: endpoint)
     }
+
+    func fetchEvolutionChain(from urlString: String) async throws -> EvolutionChain {
+        return try await fetchData(fromURL: urlString)
+    }
 }

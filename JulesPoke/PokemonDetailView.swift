@@ -58,6 +58,28 @@ struct PokemonDetailView: View {
                         .padding(.vertical)
                     }
 
+                    // Evolution Chain Section
+                    if viewModel.evolutionChainNames.count > 1 {
+                        Text("Evolution Chain")
+                            .font(.title2)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(alignment: .center, spacing: 4) {
+                                ForEach(viewModel.evolutionChainNames.indices, id: \.self) { index in
+                                    Text(viewModel.evolutionChainNames[index].capitalized)
+                                        .padding(4)
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(8)
+                                    if index < viewModel.evolutionChainNames.count - 1 {
+                                        Image(systemName: "arrow.right")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                        .padding(.vertical)
+                    }
+
                     // Pokedex Entry Section
                     Text("Pokedex Entry")
                         .font(.title2)
