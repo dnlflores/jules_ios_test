@@ -19,12 +19,80 @@ struct PokemonDetail: Codable, Identifiable {
 }
 
 // 3. SpriteImages
+/// Represents all sprite variations returned by the PokeAPI for a Pokémon.
+/// Only a subset is modelled here but ``allSpriteURLs`` will expose every
+/// non-nil URL so new fields won't require changes in the view layer.
 struct SpriteImages: Codable {
     let front_default: String?
     let front_shiny: String?
-    // Optional other sprite URLs
+    let front_female: String?
+    let front_shiny_female: String?
     let back_default: String?
     let back_shiny: String?
+    let back_female: String?
+    let back_shiny_female: String?
+    let other: OtherSprites?
+
+    /// Collects every available sprite URL into a flat array.
+    var allSpriteURLs: [String] {
+        var urls: [String] = []
+
+        func appendIfPresent(_ value: String?) {
+            if let value = value { urls.append(value) }
+        }
+
+        appendIfPresent(front_default)
+        appendIfPresent(front_shiny)
+        appendIfPresent(front_female)
+        appendIfPresent(front_shiny_female)
+        appendIfPresent(back_default)
+        appendIfPresent(back_shiny)
+        appendIfPresent(back_female)
+        appendIfPresent(back_shiny_female)
+
+        if let other = other {
+            appendIfPresent(other.dream_world?.front_default)
+            appendIfPresent(other.dream_world?.front_female)
+            appendIfPresent(other.home?.front_default)
+            appendIfPresent(other.home?.front_female)
+            appendIfPresent(other.home?.front_shiny)
+            appendIfPresent(other.home?.front_shiny_female)
+            appendIfPresent(other.officialArtwork?.front_default)
+            appendIfPresent(other.officialArtwork?.front_shiny)
+        }
+
+        return urls
+    }
+}
+
+/// Container for sprites found in the `other` section of the API.
+struct OtherSprites: Codable {
+    let dream_world: DreamWorldSprites?
+    let home: HomeSprites?
+    let officialArtwork: OfficialArtworkSprites?
+
+    enum CodingKeys: String, CodingKey {
+        case dream_world
+        case home
+        case officialArtwork = "official-artwork"
+    }
+}
+
+struct DreamWorldSprites: Codable {
+    let front_default: String?
+    let front_female: String?
+}
+
+struct HomeSprites: Codable {
+    let front_default: String?
+    let front_female: String?
+    let front_shiny: String?
+    let front_shiny_female: String?
+}
+
+struct OfficialArtworkSprites: Codable {
+    let front_default: String?
+    let front_shiny: String?
 }
 
 // 4. MoveEntry
