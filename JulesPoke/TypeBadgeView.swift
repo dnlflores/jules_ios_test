@@ -1,8 +1,15 @@
 import SwiftUI
 
+/// Displays a Pokémon type with its corresponding icon from the asset catalog.
 struct TypeBadgeView: View {
     let typeName: String
 
+    /// Returns the image asset name for a given type.
+    private func iconName(for type: String) -> String {
+        "\(type.lowercased())_type_symbol"
+    }
+
+    /// Background color used for the badge, matching TypeBadgeView's logic.
     private func backgroundColorForType(_ typeName: String) -> Color {
         switch typeName.lowercased() {
             case "normal": return Color.gray
@@ -26,9 +33,9 @@ struct TypeBadgeView: View {
             default: return Color.gray.opacity(0.5) // Default for unknown types
         }
     }
-    
-    // Determine appropriate foreground color based on background brightness
-    private func foregroundColorForType(_ typeName: String) -> Color {
+
+    /// Determines an appropriate foreground color based on the background.
+    private func foregroundColorForType(_ typeName: String) ->  Color {
         let bgColor = backgroundColorForType(typeName)
         // Simple heuristic: if background is yellow or cyan (common light colors), use black text
         if bgColor == Color.yellow || bgColor == Color.cyan || bgColor == Color(red: 0.72, green: 0.72, blue: 0.82) /* steel */ || bgColor == Color(red: 0.93, green: 0.60, blue: 0.68) /* fairy */ {
@@ -38,29 +45,35 @@ struct TypeBadgeView: View {
     }
 
     var body: some View {
-        Text(typeName.capitalized)
-            .font(.caption.bold())
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(backgroundColorForType(typeName))
-            .foregroundColor(foregroundColorForType(typeName)) // Dynamic foreground color
-            .cornerRadius(12)
-            .shadow(color: .gray.opacity(0.5), radius: 2, x: 1, y: 1) // More defined shadow
+        HStack(spacing: 4) {
+            Image(iconName(for: typeName))
+                .resizable()
+                .frame(width: 16, height: 16)
+                .clipShape(Circle())                     // makes it round
+                .overlay(                               // optional: a circular border
+                    Circle().stroke(Color.white, lineWidth: 1)
+                )
+                .shadow(radius: 1)                      // optional: a little shadow
+            Text(typeName.capitalized)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(backgroundColorForType(typeName))
+        .foregroundColor(foregroundColorForType(typeName))
+        .cornerRadius(12)
+        .shadow(color: .gray.opacity(0.5), radius: 2, x: 1, y: 1)
     }
 }
 
-struct TypeBadgeView_Previews: PreviewProvider {
+struct TypeView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 10) {
             TypeBadgeView(typeName: "fire")
             TypeBadgeView(typeName: "water")
-            TypeBadgeView(typeName: "Grass") // Test capitalization
-            TypeBadgeView(typeName: "electric") // Test light background
-            TypeBadgeView(typeName: "steel")
-            TypeBadgeView(typeName: "fairy")
-            TypeBadgeView(typeName: "unknownType")
+            TypeBadgeView(typeName: "grass")
+            TypeBadgeView(typeName: "electric")
         }
         .padding()
-        .background(Color.white) // Add a background to the preview VStack for better contrast
+        .background(Color.white)
     }
 }
