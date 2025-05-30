@@ -5,6 +5,7 @@ class PokemonDetailViewModel: ObservableObject {
     @Published var pokemonDetail: PokemonDetail?
     @Published var pokemonSpecies: PokemonSpecies?
     @Published var typeDetails: [TypeData] = []
+    @Published var evolutionNames: [String] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
@@ -38,10 +39,19 @@ class PokemonDetailViewModel: ObservableObject {
 
             let fetchedDetail = try await detailResult
             let fetchedSpecies = try await speciesResult
-            
+
             await MainActor.run {
                 self.pokemonDetail = fetchedDetail
                 self.pokemonSpecies = fetchedSpecies
+            }
+
+            // Fetch evolution chain if available
+            if let chainURL = URL(string: fetchedSpecies.evolution_chain.url) {
+                let chainData = try await NetworkManager.shared.fetchEvolutionChain(urlString: chainURL.absoluteString)
+                let names = self.extractEvolutionNames(from: chainData.chain)
+                await MainActor.run {
+                    self.evolutionNames = names
+                }
             }
 
             // If pokemonDetail is successfully fetched and contains types, fetch type data
@@ -125,5 +135,13 @@ class PokemonDetailViewModel: ObservableObject {
         // Filter out types that the Pokemon might also be resistant to due to its other type (complex interactions)
         // For now, just list all types it's weak against.
         return Array(combinedDamageFrom).sorted()
+    }
+
+    private func extractEvolutionNames(from link: EvolutionChainLink) -> [String] {
+        var names: [String] = [link.species.name]
+        for next in link.evolves_to {
+            names.append(contentsOf: extractEvolutionNames(from: next))
+        }
+        return names
     }
 }

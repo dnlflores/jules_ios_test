@@ -99,4 +99,8 @@ class NetworkManager {
         let endpoint = "type/\(typeName.lowercased())"
         return try await fetchData(from: endpoint)
     }
+
+    func fetchEvolutionChain(urlString: String) async throws -> EvolutionChain {
+        return try await fetchData(fromURL: urlString)
+    }
 }

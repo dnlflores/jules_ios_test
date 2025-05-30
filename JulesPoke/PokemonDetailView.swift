@@ -100,6 +100,20 @@ struct PokemonDetailView: View {
                         .padding(.vertical)
                     }
 
+                    // Evolution Chain Section
+                    if viewModel.evolutionNames.count > 1 {
+                        Text("Evolution Chain").font(.title2)
+                        HStack(spacing: 4) {
+                            ForEach(viewModel.evolutionNames.indices, id: \.\.self) { index in
+                                Text(viewModel.evolutionNames[index].capitalized)
+                                if index < viewModel.evolutionNames.count - 1 {
+                                    Image(systemName: "arrow.right")
+                                }
+                            }
+                        }
+                        .padding(.vertical)
+                    }
+
                     // Moves Section (Placeholder)
                     Text("Moves")
                         .font(.title2)
