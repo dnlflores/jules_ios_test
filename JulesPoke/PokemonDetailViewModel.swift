@@ -5,6 +5,7 @@ class PokemonDetailViewModel: ObservableObject {
     @Published var pokemonDetail: PokemonDetail?
     @Published var pokemonSpecies: PokemonSpecies?
     @Published var typeDetails: [TypeData] = []
+    @Published var moveDetails: [MoveDetailData] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
@@ -62,10 +63,32 @@ class PokemonDetailViewModel: ObservableObject {
                     return results
                 }
 
-                await MainActor.run {
-                    self.typeDetails = loaded
-                }
+            await MainActor.run {
+                self.typeDetails = loaded
             }
+        }
+
+        if !fetchedDetail.moves.isEmpty {
+            let firstMoves = fetchedDetail.moves.prefix(10)
+            let loadedMoves = await withTaskGroup(of: MoveDetailData?.self) { group -> [MoveDetailData] in
+                for moveEntry in firstMoves {
+                    group.addTask {
+                        return try? await NetworkManager.shared.fetchMoveDetail(moveName: moveEntry.move.name)
+                    }
+                }
+                var results = [MoveDetailData]()
+                for await maybeMove in group {
+                    if let move = maybeMove {
+                        results.append(move)
+                    }
+                }
+                return results
+            }
+
+            await MainActor.run {
+                self.moveDetails = loadedMoves.sorted { $0.name < $1.name }
+            }
+        }
         } catch {
             await MainActor.run {
                 if let networkError = error as? NetworkError {

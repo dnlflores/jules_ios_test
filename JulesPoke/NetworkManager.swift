@@ -99,4 +99,9 @@ class NetworkManager {
         let endpoint = "type/\(typeName.lowercased())"
         return try await fetchData(from: endpoint)
     }
+
+    func fetchMoveDetail(moveName: String) async throws -> MoveDetailData {
+        let endpoint = "move/\(moveName.lowercased())"
+        return try await fetchData(from: endpoint)
+    }
 }
