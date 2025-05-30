@@ -19,13 +19,62 @@ struct PokemonDetail: Codable, Identifiable {
 }
 
 // 3. SpriteImages
+/// A container for all sprite URLs returned by the PokeAPI.  The sprite
+/// structure of the API is quite nested and can change between generations.
+/// Instead of modelling every possible field, this struct recursively
+/// collects every URL found in the `sprites` object.
 struct SpriteImages: Codable {
-    let front_default: String?
-    let front_shiny: String?
-    // Optional other sprite URLs
-    let back_default: String?
-    let back_shiny: String?
+    /// All sprite URL strings discovered in the API response.
+    let all: [String]
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: DynamicCodingKey.self)
+        var urls: [String] = []
+        SpriteImages.collectURLs(from: container, into: &urls)
+        self.all = urls
+    }
+
+    // MARK: - Recursive helpers
+
+    /// Recursively collect any URL strings from a keyed container.
+    private static func collectURLs(from container: KeyedDecodingContainer<DynamicCodingKey>, into urls: inout [String]) {
+        for key in container.allKeys {
+            if let url = try? container.decode(String.self, forKey: key), url.hasPrefix("http") {
+                urls.append(url)
+            } else if let nested = try? container.nestedContainer(keyedBy: DynamicCodingKey.self, forKey: key) {
+                collectURLs(from: nested, into: &urls)
+            } else if var unkeyed = try? container.nestedUnkeyedContainer(forKey: key) {
+                collectURLs(from: &unkeyed, into: &urls)
+            }
+        }
+    }
+
+    /// Recursively collect any URL strings from an unkeyed container.
+    private static func collectURLs(from container: inout UnkeyedDecodingContainer, into urls: inout [String]) {
+        while !container.isAtEnd {
+            if let url = try? container.decode(String.self), url.hasPrefix("http") {
+                urls.append(url)
+            } else if let nested = try? container.nestedContainer(keyedBy: DynamicCodingKey.self) {
+                collectURLs(from: nested, into: &urls)
+            } else if var unkeyed = try? container.nestedUnkeyedContainer() {
+                collectURLs(from: &unkeyed, into: &urls)
+            } else {
+                _ = try? container.decode(EmptyDecodable.self)
+            }
+        }
+    }
 }
+
+/// A helper coding key that can be created from any string or integer key.
+private struct DynamicCodingKey: CodingKey {
+    var stringValue: String
+    init?(stringValue: String) { self.stringValue = stringValue }
+    var intValue: Int?
+    init?(intValue: Int) { self.stringValue = String(intValue); self.intValue = intValue }
+}
+
+/// Used to skip over values we don't care about while decoding.
+private struct EmptyDecodable: Decodable {}
 
 // 4. MoveEntry
 struct MoveEntry: Codable, Identifiable {
