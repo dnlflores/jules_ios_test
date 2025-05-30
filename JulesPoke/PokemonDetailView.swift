@@ -36,30 +36,25 @@ struct PokemonDetailView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
-                    if let sprites = viewModel.pokemonDetail?.sprites {
-                        Text("Sprites").font(.title2) // Section title
-                        HStack {
-                            Spacer() // To center the sprites
-                            if let frontDefaultURLString = sprites.front_default, let url = URL(string: frontDefaultURLString) {
-                                AsyncImage(url: url) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    ProgressView()
+                    if let sprites = viewModel.pokemonDetail?.sprites, !sprites.all.isEmpty {
+                        Text("Sprites").font(.title2)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(sprites.all.sorted(), id: \.self) { urlString in
+                                    if let url = URL(string: urlString) {
+                                        AsyncImage(url: url) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            ProgressView()
+                                        }
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                    }
                                 }
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
                             }
-                            if let frontShinyURLString = sprites.front_shiny, let url = URL(string: frontShinyURLString) {
-                                AsyncImage(url: url) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
-                            }
-                            Spacer() // To center the sprites
+                            .padding(.horizontal)
                         }
+                        .frame(height: 120)
                         .padding(.vertical)
                     }
 
