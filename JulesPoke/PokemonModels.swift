@@ -133,6 +133,7 @@ struct TypeDetail: Codable, Identifiable {
 struct PokemonSpecies: Codable {
     let flavor_text_entries: [FlavorTextEntry]
     let id: Int // Useful for fetching, not necessarily for Identifiable here
+    let evolution_chain: EvolutionChainInfo
 }
 
 // 9. FlavorTextEntry
@@ -177,4 +178,27 @@ struct PokemonListResponse: Codable {
     let next: String?
     let previous: String?
     let results: [PokemonListItem]
+}
+
+// 15. EvolutionChainInfo
+struct EvolutionChainInfo: Codable {
+    let url: String
+}
+
+// 16. EvolutionChain
+struct EvolutionChain: Codable {
+    let id: Int
+    let chain: EvolutionChainLink
+}
+
+// 17. EvolutionChainLink
+struct EvolutionChainLink: Codable {
+    let species: SpeciesSummary
+    let evolves_to: [EvolutionChainLink]
+}
+
+// 18. SpeciesSummary
+struct SpeciesSummary: Codable {
+    let name: String
+    let url: String
 }

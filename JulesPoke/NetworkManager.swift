@@ -70,7 +70,6 @@ class NetworkManager {
         return try await fetchData(url: url, retryAttempts: retryAttempts)
     }
 
-
     // Specific API call functions
 
     func fetchPokemonList(limit: Int = 151, offset: Int = 0) async throws -> PokemonListResponse {
@@ -84,12 +83,10 @@ class NetworkManager {
     }
 
     func fetchPokemonSpecies(name: String) async throws -> PokemonSpecies {
-        // Species can be identified by name or ID. The API seems to handle names well.
         let endpoint = "pokemon-species/\(name.lowercased())"
         return try await fetchData(from: endpoint)
     }
-    
-    // It can also be fetched by ID if we have it from PokemonDetail
+
     func fetchPokemonSpecies(id: Int) async throws -> PokemonSpecies {
         let endpoint = "pokemon-species/\(id)"
         return try await fetchData(from: endpoint)
@@ -100,6 +97,14 @@ class NetworkManager {
         return try await fetchData(from: endpoint)
     }
 
+    // Merged functions:
+
+    /// Fetches an evolution chain from a full URL.
+    func fetchEvolutionChain(urlString: String) async throws -> EvolutionChain {
+        return try await fetchData(fromURL: urlString)
+    }
+
+    /// Fetches detailed move information by move name.
     func fetchMoveDetail(moveName: String) async throws -> MoveDetailData {
         let endpoint = "move/\(moveName.lowercased())"
         return try await fetchData(from: endpoint)
