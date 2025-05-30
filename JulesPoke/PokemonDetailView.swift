@@ -39,9 +39,9 @@ struct PokemonDetailView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
-                    if let sprites = viewModel.pokemonDetail?.sprites {
-                        Text("Sprites")
-                            .foregroundColor(Color("PokemonBlack")) // Section title color
+                    let sprites = detail.sprites
+                    Text("Sprites")
+                        .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack {
                             Spacer() // To center the sprites
                             if let frontDefaultURLString = sprites.front_default, let url = URL(string: frontDefaultURLString) {
@@ -65,7 +65,7 @@ struct PokemonDetailView: View {
                             Spacer() // To center the sprites
                         }
                         .padding(.vertical)
-                    }
+
 
                     // Pokedex Entry Section
                     Text("Pokedex Entry")
@@ -77,7 +77,8 @@ struct PokemonDetailView: View {
                         .padding(.bottom)
 
                     // Types Section
-                    if let types = viewModel.pokemonDetail?.types, !types.isEmpty {
+                    let types = detail.types
+                    if !types.isEmpty {
                         Text("Types")
                             .foregroundColor(Color("PokemonBlack")) // Section title color
                         HStack(spacing: 10) {
