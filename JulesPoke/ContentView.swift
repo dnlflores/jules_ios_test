@@ -76,6 +76,8 @@ struct ContentView: View {
                         self.errorMessage = "Request failed: \(underlyingError.localizedDescription). Please check your connection."
                     case .decodingError(let underlyingError):
                         self.errorMessage = "Failed to decode Pokemon data: \(underlyingError.localizedDescription). Please try again."
+                    case .noConnection:
+                        self.errorMessage = "No internet connection. Please try again when you are online."
                     case .unknown:
                         self.errorMessage = "An unknown error occurred. Please try again."
                     }
