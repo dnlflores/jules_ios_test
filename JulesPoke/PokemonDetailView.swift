@@ -18,7 +18,7 @@ struct PokemonDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                if viewModel.isLoading && viewModel.pokemonDetail == nil { // Show loading only if no detail yet
+                if viewModel.isLoading && viewModel.pokemonDetail == nil {
                     ProgressView("Loading details...")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding()
@@ -30,17 +30,18 @@ struct PokemonDetailView: View {
                 }
 
                 if let detail = viewModel.pokemonDetail {
-                    // Pokemon Name (already in navigation title, but can be good here too)
-                     Text(detail.name.capitalized)
+                    // Pokemon Name
+                    Text(detail.name.capitalized)
                         .font(.largeTitle)
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     // Sprites Section
-                    if let sprites = viewModel.pokemonDetail?.sprites {
-                        Text("Sprites").font(.title2) // Section title
+                    if let sprites = detail.sprites {
+                        Text("Sprites").font(.title2)
                         HStack {
-                            Spacer() // To center the sprites
-                            if let frontDefaultURLString = sprites.front_default, let url = URL(string: frontDefaultURLString) {
+                            Spacer()
+                            if let urlString = sprites.front_default,
+                               let url = URL(string: urlString) {
                                 AsyncImage(url: url) { image in
                                     image.resizable()
                                 } placeholder: {
@@ -49,7 +50,8 @@ struct PokemonDetailView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 100, height: 100)
                             }
-                            if let frontShinyURLString = sprites.front_shiny, let url = URL(string: frontShinyURLString) {
+                            if let urlString = sprites.front_shiny,
+                               let url = URL(string: urlString) {
                                 AsyncImage(url: url) { image in
                                     image.resizable()
                                 } placeholder: {
@@ -58,7 +60,7 @@ struct PokemonDetailView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 100, height: 100)
                             }
-                            Spacer() // To center the sprites
+                            Spacer()
                         }
                         .padding(.vertical)
                     }
@@ -67,12 +69,14 @@ struct PokemonDetailView: View {
                     Text("Pokedex Entry")
                         .font(.title2)
                         .padding(.top)
-                    
-                    Text(viewModel.englishPokedexEntry ?? (viewModel.isLoading ? "Loading entry..." : "No Pokedex entry available."))
+                    Text(viewModel.englishPokedexEntry
+                            ?? (viewModel.isLoading
+                                ? "Loading entry..."
+                                : "No Pokedex entry available."))
                         .padding(.bottom)
 
                     // Types Section
-                    if let types = viewModel.pokemonDetail?.types, !types.isEmpty {
+                    if let types = detail.types, !types.isEmpty {
                         Text("Types").font(.title2)
                         HStack(spacing: 10) {
                             ForEach(types, id: \.slot) { typeEntry in
@@ -85,7 +89,11 @@ struct PokemonDetailView: View {
                     // Effective Against Section
                     if !viewModel.effectiveAgainstTypes.isEmpty {
                         Text("Effective Against").font(.title2)
-                        FlexibleFlowLayout(data: viewModel.effectiveAgainstTypes, spacing: 8, alignment: .leading) { typeName in
+                        FlexibleFlowLayout(
+                          data: viewModel.effectiveAgainstTypes,
+                          spacing: 8,
+                          alignment: .leading
+                        ) { typeName in
                             TypeBadgeView(typeName: typeName)
                         }
                         .padding(.vertical)
@@ -94,16 +102,33 @@ struct PokemonDetailView: View {
                     // Weak Against Section
                     if !viewModel.weakAgainstTypes.isEmpty {
                         Text("Weak Against").font(.title2)
-                        FlexibleFlowLayout(data: viewModel.weakAgainstTypes, spacing: 8, alignment: .leading) { typeName in
+                        FlexibleFlowLayout(
+                          data: viewModel.weakAgainstTypes,
+                          spacing: 8,
+                          alignment: .leading
+                        ) { typeName in
                             TypeBadgeView(typeName: typeName)
+                        }
+                        .padding(.vertical)
+                    }
+
+                    // Evolution Chain Section
+                    if viewModel.evolutionNames.count > 1 {
+                        Text("Evolution Chain").font(.title2)
+                        HStack(spacing: 4) {
+                            ForEach(viewModel.evolutionNames.indices, id: \.self) { index in
+                                Text(viewModel.evolutionNames[index].capitalized)
+                                if index < viewModel.evolutionNames.count - 1 {
+                                    Image(systemName: "arrow.right")
+                                }
+                            }
                         }
                         .padding(.vertical)
                     }
 
                     // Moves Section
                     if !viewModel.moveDetails.isEmpty {
-                        Text("Moves")
-                            .font(.title2)
+                        Text("Moves").font(.title2)
                         VStack(alignment: .leading, spacing: 8) {
                             ForEach(viewModel.moveDetails) { move in
                                 HStack(spacing: 8) {
@@ -116,15 +141,12 @@ struct PokemonDetailView: View {
                         .padding(.bottom)
                     }
 
-                    // Effectiveness Section (Placeholder) - This was part of the original code, if it's different from "Effective/Weak Against", it should remain or be clarified.
-                    // For now, assuming "Effective Against" and "Weak Against" cover this. If not, this placeholder might need to be re-evaluated.
-                    // Text("Effectiveness") 
-                    //     .font(.title2)
+                    // (Optional) Additional effectiveness section could go here
+                    // Text("Effectiveness").font(.title2)
                     // Text("Effectiveness will go here")
                     //     .padding(.bottom)
 
                 } else if !viewModel.isLoading && viewModel.errorMessage == nil {
-                     // Case where not loading, no error, but also no detail (e.g. initial state before task runs, though less likely with current VM setup)
                     Text("No details available for \(pokemonName.capitalized).")
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -134,18 +156,13 @@ struct PokemonDetailView: View {
         }
         .navigationTitle(viewModel.pokemonDetail?.name.capitalized ?? pokemonName.capitalized)
         .navigationBarTitleDisplayMode(.inline)
-        // .task { // ViewModel now fetches in its init
-        //     if viewModel.pokemonDetail == nil { // Optional: prevent re-fetching if already loaded by a previous view
-        //         await viewModel.fetchAllData()
-        //     }
-        // }
     }
 }
 
 struct PokemonDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            PokemonDetailView(pokemonName: "pikachu") // A common Pokemon for preview
+            PokemonDetailView(pokemonName: "pikachu")
         }
     }
 }
