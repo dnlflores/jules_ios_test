@@ -76,6 +76,8 @@ class PokemonDetailViewModel: ObservableObject {
                         self.errorMessage = "Request failed: \(underlyingError.localizedDescription)."
                     case .decodingError(let underlyingError):
                         self.errorMessage = "Failed to decode Pokemon details: \(underlyingError.localizedDescription)."
+                    case .noConnection:
+                        self.errorMessage = "No internet connection. Unable to fetch Pokemon details."
                     case .unknown:
                         self.errorMessage = "An unknown error occurred while fetching Pokemon details."
                     }
