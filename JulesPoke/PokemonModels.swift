@@ -40,6 +40,14 @@ struct Move: Codable, Identifiable {
     var id: String { name }
 }
 
+// Details for an individual move used to display additional
+// information such as the move's type.
+struct MoveDetailData: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let type: TypeDetail
+}
+
 // 6. TypeEntry
 struct TypeEntry: Codable {
     let slot: Int
